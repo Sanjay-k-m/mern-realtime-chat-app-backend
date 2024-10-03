@@ -9,7 +9,7 @@ import configureSwagger from "./swagger.js";
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
-// import userRoutes from "./routes/user.routes.js";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/messages", messageRoutes);
-// app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/users", userRoutes);
 
 // Configure Swagger documentation
 configureSwagger(app);

@@ -13,6 +13,11 @@ const options = {
     servers: [
       {
         url: `http://localhost:${ENV_VARS.PORT}/api/v1`,
+        description: "Development server",
+      },
+      {
+        url: `https://realtime-messaging-app.herokuapp.com/api/v1`,
+        description: "Production server",
       },
     ],
     components: {
