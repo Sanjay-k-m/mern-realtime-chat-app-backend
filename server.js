@@ -1,33 +1,38 @@
+import path from "path";
 import express from "express";
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import helmet from "helmet";
-
-import { ENV_VARS } from "./config/envVar.js";
-import connectDB from "./config/db.js";
-import setupLogger from "./utils/logger.js";
-import configureSwagger from "./swagger.js";
+import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 import userRoutes from "./routes/user.routes.js";
 
-const app = express();
+import connectToMongoDB from "./db/connectToMongoDB.js";
+import { app, server } from "./socket/socket.js";
 
-setupLogger(app); // Set up the logger
+dotenv.config();
 
-// Use Helmet middleware
-app.use(helmet());
-app.use(express.json()); // to parse the body of the request
-app.use(cookieParser());
+const __dirname = path.resolve();
+// PORT should be assigned after calling dotenv.config() because we need to access the env variables. Didn't realize while recording the video. Sorry for the confusion.
+const PORT = process.env.PORT || 5000;
 
-app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/messages", messageRoutes);
-app.use("/api/v1/users", userRoutes);
+app.use(express.json()); // to parse the incoming requests with JSON payloads (from req.body)
 
-// Configure Swagger documentation
-configureSwagger(app);
+app.use(
+  cors({
+    origin: "*", // Or allow all origins with '*'
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);app.use(cookieParser());
 
-app.listen(ENV_VARS.PORT, () => {
-  console.log(`server is running on port ${ENV_VARS.PORT}`);
-  connectDB();
+app.use("/api/auth", authRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes);
+
+
+server.listen(PORT, () => {
+  connectToMongoDB();
+  console.log(`Server Running on port ${PORT}`);
 });
